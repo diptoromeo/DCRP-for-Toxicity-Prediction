@@ -1,0 +1,12 @@
+biomarker,symbol,category,direction,As3_D10,As3_D20,As5_D10,As5_D20
+Hb,Hb,haematological,decrease,2.0,0.5,inf,4.0
+Hct,Hct,haematological,decrease,2.0,0.5,4.0,2.0
+RBC count,RBC,haematological,decrease,1.0,0.5,1.0,2.0
+Calcium,Ca,electrolyte,decrease,2.0,0.5,2.0,0.5
+Magnesium,Mg,electrolyte,decrease,8.0,inf,8.0,4.0
+Glucose,Gluc,metabolic,increase,8.0,2.0,8.0,4.0
+Cholesterol,Chol,metabolic,decrease,8.0,0.5,8.0,2.0
+Total protein,TP,biochemical,decrease,8.0,0.5,4.0,0.5
+AST,AST,hepatic,increase,4.0,1.0,2.0,4.0
+ALT,ALT,hepatic,increase,4.0,2.0,8.0,4.0
+ALP,ALP,hepatic,increase,8.0,2.0,inf,4.0

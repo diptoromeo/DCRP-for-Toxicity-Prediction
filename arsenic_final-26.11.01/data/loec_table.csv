@@ -1,0 +1,45 @@
+species,day,biomarker,loec_mg_per_L,significant,direction
+As3,10,Hb,2.0,yes,decrease
+As3,10,Hct,2.0,yes,decrease
+As3,10,RBC count,1.0,yes,decrease
+As3,10,Calcium,2.0,yes,decrease
+As3,10,Magnesium,8.0,yes,decrease
+As3,10,Glucose,8.0,yes,increase
+As3,10,Cholesterol,8.0,yes,decrease
+As3,10,Total protein,8.0,yes,decrease
+As3,10,AST,4.0,yes,increase
+As3,10,ALT,4.0,yes,increase
+As3,10,ALP,8.0,yes,increase
+As3,20,Hb,0.5,yes,decrease
+As3,20,Hct,0.5,yes,decrease
+As3,20,RBC count,0.5,yes,decrease
+As3,20,Calcium,0.5,yes,decrease
+As3,20,Magnesium,,no,decrease
+As3,20,Glucose,2.0,yes,increase
+As3,20,Cholesterol,0.5,yes,decrease
+As3,20,Total protein,0.5,yes,decrease
+As3,20,AST,1.0,yes,increase
+As3,20,ALT,2.0,yes,increase
+As3,20,ALP,2.0,yes,increase
+As5,10,Hb,,no,decrease
+As5,10,Hct,4.0,yes,decrease
+As5,10,RBC count,1.0,yes,decrease
+As5,10,Calcium,2.0,yes,decrease
+As5,10,Magnesium,8.0,yes,decrease
+As5,10,Glucose,8.0,yes,increase
+As5,10,Cholesterol,8.0,yes,decrease
+As5,10,Total protein,4.0,yes,decrease
+As5,10,AST,2.0,yes,increase
+As5,10,ALT,8.0,yes,increase
+As5,10,ALP,,no,increase
+As5,20,Hb,4.0,yes,decrease
+As5,20,Hct,2.0,yes,decrease
+As5,20,RBC count,2.0,yes,decrease
+As5,20,Calcium,0.5,yes,decrease
+As5,20,Magnesium,4.0,yes,decrease
+As5,20,Glucose,4.0,yes,increase
+As5,20,Cholesterol,2.0,yes,decrease
+As5,20,Total protein,0.5,yes,decrease
+As5,20,AST,4.0,yes,increase
+As5,20,ALT,4.0,yes,increase
+As5,20,ALP,4.0,yes,increase

@@ -1,0 +1,439 @@
+==============================================================================
+  Arsenic biomonitoring pipeline -- single-file reproduction
+==============================================================================
+  python 3.12.3 on linux
+  numpy 2.4.4, pandas 3.0.2, sklearn 1.8.0, matplotlib 3.10.8
+  bootstrap 1000 replicates, permutation 300 replicates
+  outputs: /tmp/runclean/out  |  /tmp/runclean/figs  |  /tmp/runclean/tables
+  data folder: /tmp/runclean/data
+    workbooks: as3___raw_data.xlsx, as5__raw_data.xlsx
+  loaded 155 fish in 23 dose groups
+    As(III) D-10: n=49, doses [0.0, 0.1, 0.5, 1.0, 2.0, 4.0, 8.0] mg/L
+    As(III) D-20: n=35, doses [0.0, 0.1, 0.5, 1.0, 2.0] mg/L
+    As(V) D-10: n=40, doses [0.0, 0.5, 1.0, 2.0, 4.0, 8.0] mg/L
+    As(V) D-20: n=31, doses [0.0, 0.5, 1.0, 2.0, 4.0] mg/L
+  running experiments: [1, 3, 4, 5, 6, 7, 8, 10]
+  
+[1/9] E1  LOEC table and response directions
+  As(III) D-10: 11/11 biomarkers respond; lowest at 1 mg/L (RBC)
+  As(III) D-20: 10/11 biomarkers respond; lowest at 0.5 mg/L (Hb, Hct, RBC, Ca, Chol, TP); n.s.: Mg
+  As(V) D-10: 9/11 biomarkers respond; lowest at 1 mg/L (RBC); n.s.: Hb, ALP
+  As(V) D-20: 11/11 biomarkers respond; lowest at 0.5 mg/L (Ca, TP)
+    table t1_loec.tex  (11 rows x 7 cols)
+  
+[2/9] E3  calibration of the abnormality rule
+  k=2.0 As(III) D-10: LOO control FP=0.00, top-dose rate=1.00
+  k=2.5 As(III) D-10: LOO control FP=0.00, top-dose rate=1.00
+  k=3.0 As(III) D-10: LOO control FP=0.00, top-dose rate=1.00
+  k=2.0 As(III) D-20: LOO control FP=0.00, top-dose rate=1.00
+  k=2.5 As(III) D-20: LOO control FP=0.00, top-dose rate=1.00
+  k=3.0 As(III) D-20: LOO control FP=0.00, top-dose rate=1.00
+  k=2.0 As(V) D-10: LOO control FP=0.00, top-dose rate=1.00
+  k=2.5 As(V) D-10: LOO control FP=0.00, top-dose rate=1.00
+  k=3.0 As(V) D-10: LOO control FP=0.00, top-dose rate=0.80
+  k=2.0 As(V) D-20: LOO control FP=0.29, top-dose rate=1.00
+  k=2.5 As(V) D-20: LOO control FP=0.14, top-dose rate=1.00
+  k=3.0 As(V) D-20: LOO control FP=0.00, top-dose rate=1.00
+  adopted: k=2.5, k_min=2, directional flags
+    table t4_calibration.tex  (3 rows x 5 cols)
+  
+[3/9] E4  Task A: exposure detection and dose reconstruction
+
+[   0.0s] As(III) D-10  (n=49, exposed=42, control=7)
+    protocol: Random 5-fold  (5 folds)
+    Random 5-fold: Majority class
+      Majority class                 AUC=0.500 [0.50,0.50]  BAcc=0.500  F1=0.462
+    Random 5-fold: Logistic (L2)
+      Logistic (L2)                  AUC=0.752 [0.41,0.98]  BAcc=0.667  F1=0.606
+    Random 5-fold: Logistic (L1, CV)
+      Logistic (L1, CV)              AUC=0.558 [0.37,0.69]  BAcc=0.583  F1=0.545
+    Random 5-fold: Random forest
+      Random forest                  AUC=0.789 [0.49,0.98]  BAcc=0.524  F1=0.525
+    Random 5-fold: Grad. boosting
+      Grad. boosting                 AUC=0.728 [0.45,0.94]  BAcc=0.512  F1=0.512
+    Random 5-fold: MLP (32--32)
+      MLP (32--32)                   AUC=0.602 [0.32,0.84]  BAcc=0.488  F1=0.488
+    Random 5-fold: DCRP, no severity
+      DCRP, no severity              AUC=0.735 [0.40,0.95]  BAcc=0.607  F1=0.576
+    Random 5-fold: DCRP (proposed)
+      DCRP (proposed)                AUC=0.755 [0.43,0.97]  BAcc=0.607  F1=0.576
+    protocol: LODGO  (6 folds)
+    LODGO: Majority class
+      Majority class                 AUC=0.500 [0.50,0.50]  BAcc=0.500  F1=0.462
+    LODGO: Logistic (L2)
+      Logistic (L2)                  AUC=0.752 [0.43,0.99]  BAcc=0.738  F1=0.648
+    LODGO: Logistic (L1, CV)
+      Logistic (L1, CV)              AUC=0.786 [0.43,1.00]  BAcc=0.869  F1=0.705
+    LODGO: Random forest
+      Random forest                  AUC=0.789 [0.47,0.98]  BAcc=0.655  F1=0.646
+    LODGO: Grad. boosting
+      Grad. boosting                 AUC=0.707 [0.42,0.93]  BAcc=0.524  F1=0.510
+    LODGO: MLP (32--32)
+      MLP (32--32)                   AUC=0.636 [0.33,0.91]  BAcc=0.488  F1=0.488
+    LODGO: DCRP, no severity
+      DCRP, no severity              AUC=0.752 [0.44,0.98]  BAcc=0.607  F1=0.576
+    LODGO: DCRP (proposed)
+      DCRP (proposed)                AUC=0.752 [0.45,0.98]  BAcc=0.595  F1=0.560
+  As3_D10: permutation test, 300 relabelled CV runs
+    permutation test (300 relabellings of the full CV loop)
+      observed vs null               0.752 vs 0.459+/-0.157  p=0.0299
+      dose reconstruction (Ridge)    rho=0.898  MAE=0.437 log10
+      dose reconstruction (Random forest) rho=0.841  MAE=0.312 log10
+
+[  20.7s] As(III) D-20  (n=35, exposed=28, control=7)
+    protocol: Random 5-fold  (5 folds)
+    Random 5-fold: Majority class
+      Majority class                 AUC=0.500 [0.50,0.50]  BAcc=0.500  F1=0.444
+    Random 5-fold: Logistic (L2)
+      Logistic (L2)                  AUC=0.903 [0.71,1.00]  BAcc=0.857  F1=0.806
+    Random 5-fold: Logistic (L1, CV)
+      Logistic (L1, CV)              AUC=0.878 [0.72,0.99]  BAcc=0.875  F1=0.838
+    Random 5-fold: Random forest
+      Random forest                  AUC=0.918 [0.76,1.00]  BAcc=0.768  F1=0.799
+    Random 5-fold: Grad. boosting
+      Grad. boosting                 AUC=0.839 [0.64,0.99]  BAcc=0.607  F1=0.622
+    Random 5-fold: MLP (32--32)
+      MLP (32--32)                   AUC=0.872 [0.68,1.00]  BAcc=0.732  F1=0.732
+    Random 5-fold: DCRP, no severity
+      DCRP, no severity              AUC=0.944 [0.83,1.00]  BAcc=0.875  F1=0.838
+    Random 5-fold: DCRP (proposed)
+      DCRP (proposed)                AUC=0.959 [0.88,1.00]  BAcc=0.946  F1=0.883
+    protocol: LODGO  (4 folds)
+    LODGO: Majority class
+      Majority class                 AUC=0.500 [0.50,0.50]  BAcc=0.500  F1=0.444
+    LODGO: Logistic (L2)
+      Logistic (L2)                  AUC=0.903 [0.72,1.00]  BAcc=0.804  F1=0.720
+    LODGO: Logistic (L1, CV)
+      Logistic (L1, CV)              AUC=0.740 [0.49,0.98]  BAcc=0.679  F1=0.602
+    LODGO: Random forest
+      Random forest                  AUC=0.852 [0.56,1.00]  BAcc=0.732  F1=0.675
+    LODGO: Grad. boosting
+      Grad. boosting                 AUC=0.852 [0.57,1.00]  BAcc=0.804  F1=0.720
+    LODGO: MLP (32--32)
+      MLP (32--32)                   AUC=0.816 [0.56,0.98]  BAcc=0.679  F1=0.650
+    LODGO: DCRP, no severity
+      DCRP, no severity              AUC=0.923 [0.79,1.00]  BAcc=0.875  F1=0.762
+    LODGO: DCRP (proposed)
+      DCRP (proposed)                AUC=0.954 [0.86,1.00]  BAcc=0.929  F1=0.850
+  As3_D20: permutation test, 300 relabelled CV runs
+    permutation test (300 relabellings of the full CV loop)
+      observed vs null               0.954 vs 0.480+/-0.145  p=0.0033
+      dose reconstruction (Ridge)    rho=0.936  MAE=0.164 log10
+      dose reconstruction (Random forest) rho=0.908  MAE=0.206 log10
+
+[  35.5s] As(V) D-10  (n=40, exposed=33, control=7)
+    protocol: Random 5-fold  (5 folds)
+    Random 5-fold: Majority class
+      Majority class                 AUC=0.500 [0.50,0.50]  BAcc=0.500  F1=0.452
+    Random 5-fold: Logistic (L2)
+      Logistic (L2)                  AUC=0.892 [0.73,1.00]  BAcc=0.853  F1=0.785
+    Random 5-fold: Logistic (L1, CV)
+      Logistic (L1, CV)              AUC=0.939 [0.83,1.00]  BAcc=0.864  F1=0.725
+    Random 5-fold: Random forest
+      Random forest                  AUC=0.835 [0.63,0.99]  BAcc=0.511  F1=0.510
+    Random 5-fold: Grad. boosting
+      Grad. boosting                 AUC=0.784 [0.64,0.90]  BAcc=0.725  F1=0.713
+    Random 5-fold: MLP (32--32)
+      MLP (32--32)                   AUC=0.870 [0.68,1.00]  BAcc=0.684  F1=0.706
+    Random 5-fold: DCRP, no severity
+      DCRP, no severity              AUC=0.926 [0.79,1.00]  BAcc=0.868  F1=0.813
+    Random 5-fold: DCRP (proposed)
+      DCRP (proposed)                AUC=0.905 [0.75,1.00]  BAcc=0.797  F1=0.766
+    protocol: LODGO  (5 folds)
+    LODGO: Majority class
+      Majority class                 AUC=0.500 [0.50,0.50]  BAcc=0.500  F1=0.452
+    LODGO: Logistic (L2)
+      Logistic (L2)                  AUC=0.900 [0.74,1.00]  BAcc=0.924  F1=0.827
+    LODGO: Logistic (L1, CV)
+      Logistic (L1, CV)              AUC=0.903 [0.78,0.99]  BAcc=0.833  F1=0.680
+    LODGO: Random forest
+      Random forest                  AUC=0.857 [0.67,1.00]  BAcc=0.526  F1=0.526
+    LODGO: Grad. boosting
+      Grad. boosting                 AUC=0.857 [0.74,0.96]  BAcc=0.740  F1=0.740
+    LODGO: MLP (32--32)
+      MLP (32--32)                   AUC=0.848 [0.65,0.99]  BAcc=0.597  F1=0.608
+    LODGO: DCRP, no severity
+      DCRP, no severity              AUC=0.909 [0.76,0.99]  BAcc=0.883  F1=0.844
+    LODGO: DCRP (proposed)
+      DCRP (proposed)                AUC=0.922 [0.78,1.00]  BAcc=0.883  F1=0.844
+  As5_D10: permutation test, 300 relabelled CV runs
+    permutation test (300 relabellings of the full CV loop)
+      observed vs null               0.922 vs 0.458+/-0.161  p=0.0033
+      dose reconstruction (Ridge)    rho=0.913  MAE=0.322 log10
+      dose reconstruction (Random forest) rho=0.850  MAE=0.360 log10
+
+[  48.4s] As(V) D-20  (n=31, exposed=24, control=7)
+    protocol: Random 5-fold  (5 folds)
+    Random 5-fold: Majority class
+      Majority class                 AUC=0.500 [0.50,0.50]  BAcc=0.500  F1=0.436
+    Random 5-fold: Logistic (L2)
+      Logistic (L2)                  AUC=0.982 [0.95,1.00]  BAcc=0.866  F1=0.832
+    Random 5-fold: Logistic (L1, CV)
+      Logistic (L1, CV)              AUC=0.750 [0.61,0.85]  BAcc=0.774  F1=0.747
+    Random 5-fold: Random forest
+      Random forest                  AUC=0.958 [0.91,1.00]  BAcc=0.836  F1=0.854
+    Random 5-fold: Grad. boosting
+      Grad. boosting                 AUC=0.920 [0.82,1.00]  BAcc=0.744  F1=0.757
+    Random 5-fold: MLP (32--32)
+      MLP (32--32)                   AUC=0.923 [0.84,1.00]  BAcc=0.723  F1=0.723
+    Random 5-fold: DCRP, no severity
+      DCRP, no severity              AUC=0.970 [0.92,1.00]  BAcc=0.866  F1=0.832
+    Random 5-fold: DCRP (proposed)
+      DCRP (proposed)                AUC=0.976 [0.93,1.00]  BAcc=0.908  F1=0.908
+    protocol: LODGO  (4 folds)
+    LODGO: Majority class
+      Majority class                 AUC=0.500 [0.50,0.50]  BAcc=0.500  F1=0.436
+    LODGO: Logistic (L2)
+      Logistic (L2)                  AUC=0.964 [0.90,1.00]  BAcc=0.938  F1=0.878
+    LODGO: Logistic (L1, CV)
+      Logistic (L1, CV)              AUC=0.851 [0.79,0.91]  BAcc=0.824  F1=0.765
+    LODGO: Random forest
+      Random forest                  AUC=0.958 [0.88,1.00]  BAcc=0.836  F1=0.854
+    LODGO: Grad. boosting
+      Grad. boosting                 AUC=0.899 [0.79,1.00]  BAcc=0.723  F1=0.723
+    LODGO: MLP (32--32)
+      MLP (32--32)                   AUC=0.851 [0.70,0.99]  BAcc=0.723  F1=0.723
+    LODGO: DCRP, no severity
+      DCRP, no severity              AUC=0.863 [0.68,1.00]  BAcc=0.774  F1=0.747
+    LODGO: DCRP (proposed)
+      DCRP (proposed)                AUC=0.935 [0.82,1.00]  BAcc=0.723  F1=0.723
+  As5_D20: permutation test, 300 relabelled CV runs
+    permutation test (300 relabellings of the full CV loop)
+      observed vs null               0.935 vs 0.467+/-0.156  p=0.0033
+      dose reconstruction (Ridge)    rho=0.806  MAE=0.453 log10
+      dose reconstruction (Random forest) rho=0.751  MAE=0.315 log10
+    table t5_taskA.tex  (8 rows x 5 cols)
+    table t6_taskA_inference.tex  (4 rows x 7 cols)
+  
+[4/9] E5  held-out-cohort transfer
+      As(III) D-10  ->  As(III) D-20   AUC=0.949  (duration)
+      As(III) D-10  ->  As(V) D-10     AUC=0.931  (speciation)
+      As(III) D-10  ->  As(V) D-20     AUC=0.952  (both)
+      As(III) D-20  ->  As(III) D-10   AUC=0.895  (duration)
+      As(III) D-20  ->  As(V) D-10     AUC=0.857  (both)
+      As(III) D-20  ->  As(V) D-20     AUC=0.952  (speciation)
+        As(V) D-10  ->  As(III) D-10   AUC=0.874  (speciation)
+        As(V) D-10  ->  As(III) D-20   AUC=0.934  (both)
+        As(V) D-10  ->  As(V) D-20     AUC=0.923  (duration)
+        As(V) D-20  ->  As(III) D-10   AUC=0.844  (both)
+        As(V) D-20  ->  As(III) D-20   AUC=0.980  (speciation)
+        As(V) D-20  ->  As(V) D-10     AUC=0.870  (duration)
+    table t7_transfer.tex  (8 rows x 6 cols)
+  
+[5/9] E6  Task B: panel-split hepatic outcome
+    As(III) D-10 / concentration only          AUC=0.904 [0.66,0.99]
+    As(III) D-10 / biomarkers only             AUC=0.788 [0.47,0.96]
+    As(III) D-10 / both                        AUC=0.817 [0.50,0.98]
+    As(III) D-20 / concentration only          AUC=0.905 [0.66,0.96]
+    As(III) D-20 / biomarkers only             AUC=0.619 [0.17,0.88]
+    As(III) D-20 / both                        AUC=0.619 [0.17,0.88]
+    As(V) D-10 / concentration only            AUC=0.713 [0.57,0.74]
+    As(V) D-10 / biomarkers only               AUC=0.404 [0.14,0.61]
+    As(V) D-10 / both                          AUC=0.526 [0.12,0.69]
+    As(V) D-20 / concentration only            AUC=0.552 [0.29,0.85]
+    As(V) D-20 / biomarkers only               AUC=0.517 [0.31,0.85]
+    As(V) D-20 / both                          AUC=0.510 [0.31,0.85]
+    table t8_taskB.tex  (4 rows x 7 cols)
+  
+[6/9] E7  dose-response and benchmark doses
+  As(III) D-10: fitting 11 biomarkers
+  As3_D10: BMD for 11 biomarkers, 300 bootstrap each
+    BMD Hb
+    Hb       BMD=0.32 [0.12,0.88]  LOEC=2
+    BMD Hct
+    Hct      BMD=1.17 [0.60,1.79]  LOEC=2
+    BMD RBC count
+    RBC      BMD=0.32 [0.19,0.62]  LOEC=1
+    BMD Calcium
+    Ca       BMD=0.63 [0.45,1.59]  LOEC=2
+    BMD Magnesium
+    Mg       BMD=7.51 [4.55,7.96]  LOEC=8
+    BMD Glucose
+    Gluc     BMD=0.32 [0.16,1.27]  LOEC=8
+    BMD Cholesterol
+    Chol     BMD=1.22 [0.82,2.73]  LOEC=8
+    BMD Total protein
+    TP       BMD=1.67 [0.83,7.19]  LOEC=8
+    BMD AST
+    AST      BMD=0.83 [0.48,1.91]  LOEC=4
+    BMD ALT
+    ALT      BMD=1.61 [1.05,2.99]  LOEC=4
+    BMD ALP
+    ALP      BMD=1.77 [0.98,3.62]  LOEC=8
+  As(III) D-20: fitting 11 biomarkers
+  As3_D20: BMD for 11 biomarkers, 300 bootstrap each
+    BMD Hb
+    Hb       BMD=0.18 [0.10,0.32]  LOEC=0.5
+    BMD Hct
+    Hct      BMD=0.12 [0.07,0.47]  LOEC=0.5
+    BMD RBC count
+    RBC      BMD=0.28 [0.21,0.50]  LOEC=0.5
+    BMD Calcium
+    Ca       BMD=0.15 [0.08,0.40]  LOEC=0.5
+    BMD Magnesium
+    Mg       BMD=0.18 [0.05,0.79]  LOEC=n.s.
+    BMD Glucose
+    Gluc     BMD=0.94 [0.43,1.75]  LOEC=2
+    BMD Cholesterol
+    Chol     BMD=0.13 [0.00,0.36]  LOEC=0.5
+    BMD Total protein
+    TP       BMD=0.19 [0.10,0.32]  LOEC=0.5
+    BMD AST
+    AST      BMD=0.26 [0.16,0.91]  LOEC=1
+    BMD ALT
+    ALT      BMD=0.29 [0.12,0.72]  LOEC=2
+    BMD ALP
+    ALP      BMD=0.83 [0.29,1.86]  LOEC=2
+  As(V) D-10: fitting 11 biomarkers
+  As5_D10: BMD for 11 biomarkers, 300 bootstrap each
+    BMD Hb
+    Hb       BMD=1.90 [1.03,2.10]  LOEC=n.s.
+    BMD Hct
+    Hct      BMD=0.55 [0.03,1.68]  LOEC=4
+    BMD RBC count
+    RBC      BMD=0.33 [0.06,0.52]  LOEC=1
+    BMD Calcium
+    Ca       BMD=0.91 [0.65,1.61]  LOEC=2
+    BMD Magnesium
+    Mg       BMD=5.15 [1.98,7.81]  LOEC=8
+    BMD Glucose
+    Gluc     BMD=2.08 [0.98,7.40]  LOEC=8
+    BMD Cholesterol
+    Chol     BMD=1.69 [0.94,2.62]  LOEC=8
+    BMD Total protein
+    TP       BMD=1.54 [0.91,2.22]  LOEC=4
+    BMD AST
+    AST      BMD=0.81 [0.62,1.53]  LOEC=2
+    BMD ALT
+    ALT      BMD=1.92 [0.98,5.80]  LOEC=8
+    BMD ALP
+    ALP      BMD=7.60 [2.14,7.91]  LOEC=n.s.
+  As(V) D-20: fitting 11 biomarkers
+  As5_D20: BMD for 11 biomarkers, 300 bootstrap each
+    BMD Hb
+    Hb       BMD=1.80 [1.05,2.60]  LOEC=4
+    BMD Hct
+    Hct      BMD=0.51 [0.35,1.82]  LOEC=2
+    BMD RBC count
+    RBC      BMD=1.25 [0.79,1.78]  LOEC=2
+    BMD Calcium
+    Ca       BMD=0.12 [0.01,0.33]  LOEC=0.5
+    BMD Magnesium
+    Mg       BMD=1.97 [1.15,2.48]  LOEC=4
+    BMD Glucose
+    Gluc     BMD=0.56 [0.10,1.58]  LOEC=4
+    BMD Cholesterol
+    Chol     BMD=0.75 [0.32,1.48]  LOEC=2
+    BMD Total protein
+    TP       BMD=0.41 [0.00,1.25]  LOEC=0.5
+    BMD AST
+    AST      BMD=2.41 [1.36,3.67]  LOEC=4
+    BMD ALT
+    ALT      BMD=1.60 [0.93,3.15]  LOEC=4
+    BMD ALP
+    ALP      BMD=2.96 [1.57,3.85]  LOEC=4
+
+[ 193.5s] BMD vs LOEC agreement
+    pairs with a finite LOEC               41
+    Spearman rho                           0.814  (p=9.76e-11)
+    fraction with BMD <= LOEC              1.00
+    median BMD/LOEC ratio                  0.334
+    table t9_bmd.tex  (11 rows x 5 cols)
+  
+[7/9] E8  survival and LC50
+  As(III) D-10: 0 deaths in 0 groups  [no mortality]
+    LC50     n/a
+  As(III) D-20: 14 deaths in 2 groups  [4mg/L:0/7, 8mg/L:0/7]
+    LC50     2.83 mg/L  [2.83, 2.83]
+  As(V) D-10: 2 deaths in 1 groups  [8mg/L:5/7]
+    LC50     8.39 mg/L  [7.65, 34.23]
+  As(V) D-20: 11 deaths in 2 groups  [4mg/L:3/7, 8mg/L:0/7]
+    LC50     3.94 mg/L  [3.66, 4.35]
+    table t10_survival.tex  (8 rows x 5 cols)
+  
+[8/9] E10 permutation importance and dependency graphs
+    permuting Hb (50 repeats)
+    permuting Hct (50 repeats)
+    permuting RBC count (50 repeats)
+    permuting Calcium (50 repeats)
+    permuting Magnesium (50 repeats)
+    permuting Glucose (50 repeats)
+    permuting Cholesterol (50 repeats)
+    permuting Total protein (50 repeats)
+    permuting AST (50 repeats)
+    permuting ALT (50 repeats)
+    permuting ALP (50 repeats)
+  As(III) D-10 (base AUC=0.752): top = Ca +0.065, RBC +0.048, Gluc +0.039
+    permuting Hb (50 repeats)
+    permuting Hct (50 repeats)
+    permuting RBC count (50 repeats)
+    permuting Calcium (50 repeats)
+    permuting Magnesium (50 repeats)
+    permuting Glucose (50 repeats)
+    permuting Cholesterol (50 repeats)
+    permuting Total protein (50 repeats)
+    permuting AST (50 repeats)
+    permuting ALT (50 repeats)
+    permuting ALP (50 repeats)
+  As(III) D-20 (base AUC=0.954): top = Gluc +0.101, Hb +0.040, AST +0.038
+    permuting Hb (50 repeats)
+    permuting Hct (50 repeats)
+    permuting RBC count (50 repeats)
+    permuting Calcium (50 repeats)
+    permuting Magnesium (50 repeats)
+    permuting Glucose (50 repeats)
+    permuting Cholesterol (50 repeats)
+    permuting Total protein (50 repeats)
+    permuting AST (50 repeats)
+    permuting ALT (50 repeats)
+    permuting ALP (50 repeats)
+  As(V) D-10 (base AUC=0.922): top = RBC +0.153, Hct +0.110, Ca +0.024
+    permuting Hb (50 repeats)
+    permuting Hct (50 repeats)
+    permuting RBC count (50 repeats)
+    permuting Calcium (50 repeats)
+    permuting Magnesium (50 repeats)
+    permuting Glucose (50 repeats)
+    permuting Cholesterol (50 repeats)
+    permuting Total protein (50 repeats)
+    permuting AST (50 repeats)
+    permuting ALT (50 repeats)
+    permuting ALP (50 repeats)
+  As(V) D-20 (base AUC=0.935): top = Gluc +0.183, Hct +0.102, Chol +0.074
+    table t13_attribution.tex  (11 rows x 6 cols)
+  
+[9/9] Figures
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+    figure fig2_bmd_loec.pdf  (15 kB)
+    figure fig3_dose_response.pdf  (15 kB)
+    figure fig4_survival.pdf  (13 kB)
+    figure fig5_task_a.pdf  (16 kB)
+    figure fig6_transfer.pdf  (24 kB)
+    figure fig7_importance.pdf  (19 kB)
+  
+==============================================================================
+  SUMMARY
+==============================================================================
+  Task A, DCRP, LODGO AUC                           : 0.75, 0.95, 0.92, 0.93
+  Task A permutation p-values                       : 0.030, 0.003, 0.003, 0.003
+  held-out-cohort transfer AUC (DCRP), min-max      : 0.84-0.98
+  BMD vs LOEC Spearman                              : 0.81 (p=9.8e-11)
+  LC50 (mg/L)                                       : --, 2.8, 8.4, 3.9
+wrote 16 CSVs, 6 figures, 9 LaTeX tables
+total elapsed 252.4 s
+==============================================================================
